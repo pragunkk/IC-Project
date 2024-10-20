@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dino Game</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: #f7f7f7;
+        }
+        #game {
+            position: relative;
+            width: 600px;
+            height: 200px;
+            background: #fff;
+            overflow: hidden;
+            border: 2px solid #333;
+        }
+        #dino {
+            position: absolute;
+            bottom: 0;
+            left: 50px;
+            width: 40px;
+            height: 40px;
+            background: green;
+        }
+        .cactus {
+            position: absolute;
+            bottom: 0;
+            width: 20px;
+            height: 40px;
+            background: brown;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game">
+    <div id="dino"></div>
+</div>
+
+<script>
+    const dino = document.getElementById('dino');
+    const game = document.getElementById('game');
+    let isJumping = false;
+    let score = 0;
+
+    function jump() {
+        if (isJumping) return;
+        isJumping = true;
+        let position = 0;
+
+        const upInterval = setInterval(() => {
+            if (position >= 100) {
+                clearInterval(upInterval);
+                const downInterval = setInterval(() => {
+                    if (position <= 0) {
+                        clearInterval(downInterval);
+                        isJumping = false;
+                    }
+                    position -= 5;
+                    dino.style.bottom = position + 'px';
+                }, 20);
+            }
+            position += 5;
+            dino.style.bottom = position + 'px';
+        }, 20);
+    }
+
+    function createCactus() {
+        const cactus = document.createElement('div');
+        cactus.classList.add('cactus');
+        cactus.style.left = '600px';
+        game.appendChild(cactus);
+        moveCactus(cactus);
+    }
+
+    function moveCactus(cactus) {
+        let cactusInterval = setInterval(() => {
+            let cactusPosition = parseInt(window.getComputedStyle(cactus).getPropertyValue('left'));
+
+            if (cactusPosition < -20) {
+                clearInterval(cactusInterval);
+                cactus.remove();
+                score++;
+                console.log('Score:', score);
+            } else if (cactusPosition > 50 && cactusPosition < 90 && !isJumping) {
+                clearInterval(cactusInterval);
+                alert('Game Over! Final Score: ' + score);
+                document.location.reload();
+            } else {
+                cactus.style.left = cactusPosition - 10 + 'px';
+            }
+        }, 20);
+    }
+
+    document.addEventListener('keydown', jump);
+    setInterval(createCactus, 2000);
+</script>
+
+</body>
+</html>
